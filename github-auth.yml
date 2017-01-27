@@ -1,0 +1,12 @@
+- type: remove
+  path: /instance_groups/name=concourse/jobs/name=atc/properties/basic_auth_username
+
+- type: remove
+  path: /instance_groups/name=concourse/jobs/name=atc/properties/basic_auth_password
+
+- type: replace
+  path: /instance_groups/name=concourse/jobs/name=atc/properties/github_auth?
+  value:
+    authorize: ((github_auth_main_teams))
+    client_id: ((github_auth_client_id))
+    client_secret: ((github_auth_client_secret))

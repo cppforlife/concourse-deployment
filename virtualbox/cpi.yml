@@ -1,0 +1,32 @@
+---
+- type: replace
+  path: /releases/-
+  value:
+    name: bosh-virtualbox-cpi
+    version: 0.0.7
+    url: https://bosh.io/d/github.com/cppforlife/bosh-virtualbox-cpi-release?v=0.0.7
+    sha1: ff9476c0ac583bdf0fdc06421423d6135ed25315
+
+- type: replace
+  path: /resource_pools/name=vms/stemcell?
+  value:
+    url: https://bosh.io/d/stemcells/bosh-vsphere-esxi-ubuntu-trusty-go_agent?v=3312.15
+    sha1: 60b8230da19d7e27b5101fc34f569e85eb5b3ad0
+
+- type: replace
+  path: /resource_pools/name=vms/cloud_properties?
+  value:
+    cpus: 2
+    memory: 4096
+    ephemeral_disk: 16_384
+
+- type: replace
+  path: /networks/name=default/subnets/0/cloud_properties?
+  value:
+    name: ((network_name))
+
+- type: replace
+  path: /cloud_provider/template?
+  value:
+    name: virtualbox_cpi
+    release: bosh-virtualbox-cpi

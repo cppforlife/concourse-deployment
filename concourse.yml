@@ -1,0 +1,129 @@
+name: concourse
+
+releases:
+- name: concourse
+  url: https://bosh.io/d/github.com/concourse/concourse?v=2.6.0
+  sha1: 6e4c1321768df37a0e3947f59d28ddf8804bd4c0
+- name: garden-runc
+  url: https://bosh.io/d/github.com/cloudfoundry/garden-runc-release?v=1.0.4
+  sha1: ef218cc8cc2ea5a874a59becabdf957e52976939
+- name: bosh-vsphere-cpi
+  url: https://bosh.io/d/github.com/cloudfoundry-incubator/bosh-vsphere-cpi-release?v=36
+  sha1: a5905550a0d9347eb7c478a3d9140a8b6aebc4e5
+- name: os-conf
+  version: 10
+  url: https://bosh.io/d/github.com/cloudfoundry/os-conf-release?v=10
+  sha1: 29e30fe7941dafc682c8eb250b78f235a552ddfe
+
+disk_pools:
+- name: disks
+  disk_size: 20_000
+
+resource_pools:
+- name: vms
+  network: default
+  env:
+    bosh:
+      password: '*'
+
+networks:
+- name: default
+  type: manual
+  subnets:
+  - range: ((internal_cidr))
+    gateway: ((internal_gw))
+    static: [((internal_ip))]
+    dns: [8.8.8.8]
+
+instance_groups:
+- name: concourse
+  instances: 1
+  resource_pool: vms
+  persistent_disk_pool: disks
+  networks:
+  - name: default
+    static_ips: [((internal_ip))]
+  jobs:
+  - name: disable_agent
+    release: os-conf
+    properties: {}
+  - name: atc
+    release: concourse
+    properties:
+      external_url: &external_url https://((internal_ip))
+      basic_auth_username: admin
+      basic_auth_password: ((ui_password))
+      tls_cert: ((atc_ssl.certificate))
+      tls_key: ((atc_ssl.private_key))
+      bind_port: 80
+      tls_bind_port: 443
+      postgresql:
+        address: 127.0.0.1
+        database: &atc_db atc
+        role:
+          name: &atc_role atc
+          password: &atc_password ((postgres_password))
+  - name: tsa
+    release: concourse
+    properties:
+      atc:
+        url: *external_url 
+  - name: postgresql
+    release: concourse
+    properties:
+      databases:
+      - name: *atc_db
+        role: *atc_role
+        password: *atc_password
+  - name: groundcrew
+    release: concourse
+    properties:
+      tsa:
+        host: 127.0.0.1
+      baggageclaim:
+        url: http://127.0.0.1:7788
+  - name: baggageclaim
+    release: concourse
+    properties: {}
+  - name: garden
+    release: garden-runc
+    properties:
+      garden:
+        listen_network: tcp
+        listen_address: 127.0.0.1:7777
+
+update:
+  canaries: 1
+  max_in_flight: 1
+  serial: false
+  canary_watch_time: 1000-60000
+  update_watch_time: 1000-60000
+
+cloud_provider:
+  mbus: https://mbus:((mbus_bootstrap_password))@((internal_ip)):6868
+  properties:
+    agent: {mbus: "https://mbus:((mbus_bootstrap_password))@0.0.0.0:6868"}
+    blobstore: {provider: local, path: /var/vcap/micro_bosh/data/cache}
+    ntp: &ntp
+    - time1.google.com
+    - time2.google.com
+    - time3.google.com
+    - time4.google.com
+
+variables:
+- name: default_ca
+  type: certificate
+  options:
+    common_name: ca
+- name: atc_ssl
+  type: certificate
+  options:
+    ca: default_ca
+    common_name: ((internal_ip))
+    alternative_names: [((internal_ip))]
+- name: postgres_password
+  type: password
+- name: ui_password
+  type: password
+- name: mbus_bootstrap_password
+  type: password
