@@ -2,7 +2,7 @@
 
 set -e
 
-rm ./creds.yml
+rm -f ./creds.yml
 
 bosh create-env concourse.yml \
   --state ./state.json \
