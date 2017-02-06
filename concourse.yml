@@ -7,13 +7,10 @@ releases:
 - name: garden-runc
   url: https://bosh.io/d/github.com/cloudfoundry/garden-runc-release?v=1.0.4
   sha1: ef218cc8cc2ea5a874a59becabdf957e52976939
-- name: bosh-vsphere-cpi
-  url: https://bosh.io/d/github.com/cloudfoundry-incubator/bosh-vsphere-cpi-release?v=36
-  sha1: a5905550a0d9347eb7c478a3d9140a8b6aebc4e5
 - name: os-conf
-  version: 10
-  url: https://bosh.io/d/github.com/cloudfoundry/os-conf-release?v=10
-  sha1: 29e30fe7941dafc682c8eb250b78f235a552ddfe
+  version: 11
+  url: https://bosh.io/d/github.com/cloudfoundry/os-conf-release?v=11
+  sha1: 651f10a765a2900a7f69ea07705f3367bd8041eb
 
 disk_pools:
 - name: disks
