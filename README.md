@@ -22,9 +22,10 @@ $ bosh create-env concourse.yml \
 Log into deployed Concourse (grab fly binary from `https://192.168.50.7`):
 
 ```
-$ fly -t local login -k -c https://192.168.50.7 \
+$ fly -t local login -c https://192.168.50.7 \
   --username admin \
-  --password `bosh int creds.yml --path /ui_password`
+  --password `bosh int creds.yml --path /ui_password` \
+  --ca-cert <(bosh int creds.yml --path /atc_ssl/ca)
 
 $ fly -t local pipelines
 ```
