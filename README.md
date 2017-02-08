@@ -15,7 +15,6 @@ $ bosh create-env concourse.yml \
   -v internal_ip=192.168.50.7 \
   -v internal_gw=192.168.50.1 \
   -v internal_cidr=192.168.50.1/24 \
-  -v network_name=vboxnet0 \
   -v outbound_network_name=NatNetwork
 ```
 
