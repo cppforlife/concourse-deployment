@@ -1,6 +1,6 @@
 # concourse-deployment
 
-- Requires new [BOSH CLI v0.0.147+](https://github.com/cloudfoundry/bosh-cli)
+- Requires new [BOSH CLI v2.0.1+](https://github.com/cloudfoundry/bosh-cli)
 
 Modify `local.sh` or run following:
 
